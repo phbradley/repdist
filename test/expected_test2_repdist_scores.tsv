@@ -1,0 +1,12 @@
+score_name	value
+num_file1_tcrs	100
+num_file2_tcrs	100
+repdist	0.43135
+avgdist	8.1083
+raw_repdist	0.43135
+file1_TCRdiv_using_sdev1	8682.51
+file1_TCRdiv_using_sdev2	608.298
+file1_TCRdiv_using_sdev3	72.9226
+file2_TCRdiv_using_sdev1	16839.6
+file2_TCRdiv_using_sdev2	534.946
+file2_TCRdiv_using_sdev3	56.6148
