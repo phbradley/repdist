@@ -2,7 +2,7 @@
 Software for comparing T cell receptor (TCR) repertoires
 
 This repository contains C++ source code for computing Repdist and TStar repertoire comparison scores.
-Usage examples can be found in the shell script: `tests/run.bash`
+Usage examples can be found in the shell script: `test/run.bash`
 
 # REQUIREMENTS
 
@@ -11,7 +11,7 @@ You can download the library [here](https://www.boost.org/users/download/).
 
 # COMPILING
 
-Edit the "BOOSTDIR" line in the Makefile (in the top directory) to point to the location where your BOOST download is installed. Then type `make` (while in the top, repdist/ directory). The binary executable files will be placed in the `bin/` directory.
+Edit the "BOOSTDIR" line in the `Makefile` (located in the top, i.e. `repdist`, directory) to point to the location where your BOOST download is installed. Then from the command line type `make` (while in the top, `repdist` directory). The binary executable files will be placed in the `bin/` directory.
 
 # THANKS
 
