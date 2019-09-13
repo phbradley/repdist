@@ -27,3 +27,28 @@ cd test/
 ./run.bash
 ```
 
+# EXAMPLES
+
+Here is an example command line that compares two human beta-chain repertoires from the `test/` directory:
+
+```
+./bin/repdist --outprefix test_ --tcrs_file1 test/human_beta_tcrs_file1.txt --tcrs_file2 test/human_beta_tcrs_file2.txt --organism human --database ./db
+```
+
+And this is what the input file format looks like (simple comma-separated: V-gene,CDR3; one TCR per line):
+
+```
+repdist$ head -n3 test/human_beta_tcrs_file1.txt 
+TRBV10-1*01,CASSSGTANTEAFF
+TRBV10-2*01,CASLDRGVHEQYF
+TRBV10-2*01,CASQDRGGGTQYF
+```
+
+The `repdist` executable generates `.tsv` (tab-separated values) output files with the repdist scores and the per-TCR TStar scores, all prefixed with the string passed in via the `--outprefix` command line argument:
+
+```
+repdist$ ls test_* 
+test_file1_NNdist_and_TStar_scores.tsv
+test_file2_NNdist_and_TStar_scores.tsv
+test_repdist_scores.tsv
+```
