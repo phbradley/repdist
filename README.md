@@ -6,7 +6,13 @@ Usage examples can be found in the shell script: `test/run.bash`
 
 # COMPILING
 
-From the command line type `make` while in the top, `repdist` directory. The binary executable files will be placed in the `bin/` directory.
+From the command line type `make` while in the top, `repdist` directory. The binary executable files will be placed in the `bin/` directory. You may need to edit the `Makefile` to point to your C++ compiler.
+
+Alternatively, you can just run this command from the top directory:
+
+`g++ -O3 -std=c++11 -Wall -I ./include/  -o bin/repdist src/repdist.cc`
+
+changing `g++` to your C++ compiler if necessary.
 
 # THANKS
 
