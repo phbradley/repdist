@@ -1,8 +1,7 @@
 # repdist
 Software for comparing T cell receptor (TCR) repertoires
 
-This repository contains C++ source code for computing Repdist and TStar repertoire comparison scores.
-Usage examples can be found in the shell script: `test/run.bash`
+This repository contains C++ source code for computing Repdist and TStar repertoire comparison scores for human and mouse TCR repertoires. Usage examples can be found in the shell script: `test/run.bash`
 
 # COMPILING
 
@@ -35,7 +34,7 @@ Here is an example command line that compares two human beta-chain repertoires f
 ./bin/repdist --outprefix test_ --tcrs_file1 test/human_beta_tcrs_file1.txt --tcrs_file2 test/human_beta_tcrs_file2.txt --organism human --database ./db
 ```
 
-And this is what the input file format looks like (simple comma-separated: V-gene,CDR3; one TCR per line):
+And this is what the input file format looks like (simple comma-separated: V-gene,CDR3; one TCR per line; no header):
 
 ```
 repdist$ head -n3 test/human_beta_tcrs_file1.txt 
