@@ -40,9 +40,9 @@ get_mean_sdev( Reals const & vals, Real & mean, Real & sdev )
 	mean = sdev = 0.0;
 	if ( vals.empty() ) return;
 
-	foreach_( Real val, vals ) mean += val;
+	for ( Real val : vals ) mean += val;
 	mean /= vals.size();
-	foreach_( Real val, vals ) sdev += ( val - mean ) * ( val - mean );
+	for ( Real val : vals ) sdev += ( val - mean ) * ( val - mean );
 	sdev = std::sqrt( sdev / vals.size() );
 }
 
@@ -185,7 +185,7 @@ map<string,strings>
 setup_v_family2v_genes( strings const & v_genes )
 {
 	map<string,strings> v_family2v_genes;
-	foreach_( string g, v_genes ) {
+	for ( string g : v_genes ) {
 		v_family2v_genes[ get_v_family_from_v_gene( g ) ].push_back( g );
 	}
 	return v_family2v_genes;

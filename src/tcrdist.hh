@@ -214,8 +214,8 @@ TCRdistCalculator::TCRdistCalculator(
 		for ( Size j=0; j< num_v_families; ++j ) {
 			string const jfam( v_families_[j] );
 			Real mindis( big_dist ), maxdis(0);
-			foreach_( string ig, v_family2v_genes.find( ifam )->second ) {
-				foreach_( string jg, v_family2v_genes.find( jfam )->second ) {
+			for ( string const & ig : v_family2v_genes.find( ifam )->second ) {
+				for ( string const & jg : v_family2v_genes.find( jfam )->second ) {
 					mindis = min( mindis, V_dist_matrix_[ v_gene2v_num_[ ig ] ][ v_gene2v_num_[ jg ] ] );
 					maxdis = max( maxdis, V_dist_matrix_[ v_gene2v_num_[ ig ] ][ v_gene2v_num_[ jg ] ] );
 				}
@@ -233,7 +233,7 @@ TCRdistCalculator::TCRdistCalculator(
 bool
 TCRdistCalculator::check_cdr3_ok( string const & cdr3 ) const
 {
-	foreach_( char const aa, cdr3 ) {
+	for( char const aa : cdr3 ) {
 		if ( amino_acids_.find(aa) == string::npos ) return false;
 	}
 	if ( cdr3.size() <= 5 ) return false;
@@ -312,8 +312,8 @@ TCRdistCalculator::operator()(
 ) const
 {
 	Real min_vdist(1e6);
-	foreach_( Size v1, t1.v_nums ) {
-		foreach_( Size v2, t2.v_nums ) {
+	for ( Size v1 : t1.v_nums ) {
+		for ( Size v2 : t2.v_nums ) {
 			min_vdist = min( min_vdist, V_dist_matrix_[ v1 ][ v2 ] );
 		}
 	}
@@ -337,7 +337,7 @@ TCRdistCalculator::create_distance_tcr_f(
 ) const
 {
 	// sanity check
-	foreach_( char const aa, cdr3 ) {
+	for ( char const aa : cdr3 ) {
 		runtime_assert( amino_acids_.find(aa) != string::npos );
 	}
 	runtime_assert( cdr3.size() > 5 );
@@ -369,7 +369,7 @@ TCRdistCalculator::create_distance_tcr_g(
 ) const
 {
 	// sanity check
-	foreach_( char const aa, cdr3 ) {
+	for ( char const aa : cdr3 ) {
 		runtime_assert( amino_acids_.find(aa) != string::npos );
 	}
 	runtime_assert( cdr3.size() > 5 );
@@ -400,13 +400,13 @@ TCRdistCalculator::create_distance_tcr_gs(
 ) const
 {
 	// sanity check
-	foreach_( char const aa, cdr3 ) {
+	for ( char const aa : cdr3 ) {
 		runtime_assert( amino_acids_.find(aa) != string::npos );
 	}
 	runtime_assert( cdr3.size() > 5 );
 
 	DistanceTCR_gs dtcr;
-	foreach_( string const & vgene, vgenes ) {
+	for( string const & vgene : vgenes ) {
 		runtime_assert( v_gene2v_num_.count( vgene ) );
 		dtcr.v_nums.push_back( v_gene2v_num_.find( vgene )->second );
 	}

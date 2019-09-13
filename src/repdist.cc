@@ -323,20 +323,20 @@ int main(int argc, char** argv)
 
 		if ( by_family ) {
 			vector< DistanceTCR_f > f1_dtcrs, f2_dtcrs;
-			foreach_( string tcr, f1_tcrs ) {
+			for ( string tcr : f1_tcrs ) {
 				f1_dtcrs.push_back( tcrdist.create_distance_tcr_f( tcr ) );
 			}
-			foreach_( string tcr, f2_tcrs ) {
+			for ( string tcr : f2_tcrs ) {
 				f2_dtcrs.push_back( tcrdist.create_distance_tcr_f( tcr ) );
 			}
 			calc_repdist_scores( f1_tcrs, f1_dtcrs, f2_tcrs, f2_dtcrs, tcrdist, outprefix );
 		} else {
 
 			vector< DistanceTCR_g > f1_dtcrs, f2_dtcrs;
-			foreach_( string tcr, f1_tcrs ) {
+			for ( string tcr : f1_tcrs ) {
 				f1_dtcrs.push_back( tcrdist.create_distance_tcr_g( tcr ) );
 			}
-			foreach_( string tcr, f2_tcrs ) {
+			for ( string tcr : f2_tcrs ) {
 				f2_dtcrs.push_back( tcrdist.create_distance_tcr_g( tcr ) );
 			}
 			calc_repdist_scores( f1_tcrs, f1_dtcrs, f2_tcrs, f2_dtcrs, tcrdist, outprefix );

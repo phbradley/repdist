@@ -4,17 +4,13 @@ CC = g++
 ## compiler flags:
 
 # debugging
-CCFLAGS  = -g -std=c++11 -Wall
+#CCFLAGS  = -g -std=c++11 -Wall
 
 # production
-#CCFLAGS  = -O3 -std=c++11 -Wall
-
-# EDIT THIS to point to the location where you installed boost
-# this should be the main directory containing boost/ doc/ libs/ etc as subdirectories
-BOOSTDIR = /home/pbradley/include/boost_1_67_0
+CCFLAGS  = -O3 -std=c++11 -Wall
 
 # 
-INCLUDES = -I ./include/  -I $(BOOSTDIR)
+INCLUDES = -I ./include/  
 
 # recompile if any .hh files changed
 HHS = src/*.hh
