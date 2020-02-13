@@ -15,10 +15,13 @@ INCLUDES = -I ./include/
 # recompile if any .hh files changed
 HHS = src/*.hh
 
-all: bin/repdist
+all: bin/repdist bin/repdistMH
 
 bin/repdist:  src/repdist.cc  $(HHS)
 	$(CC) $(CCFLAGS) $(INCLUDES) -o bin/repdist src/repdist.cc
+
+bin/repdistMH:  src/repdistMH.cc  $(HHS)
+	$(CC) $(CCFLAGS) $(INCLUDES) -o bin/repdistMH src/repdistMH.cc
 
 clean:
 	-rm bin/*

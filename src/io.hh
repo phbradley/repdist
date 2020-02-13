@@ -52,4 +52,28 @@ read_tcrs_from_file(
 
 }
 
+//
+
+void
+read_tcrs_and_counts_from_file(
+  string const filename,
+	strings & tcrs,
+	Sizes & counts
+)
+{
+	ifstream data( filename.c_str() );
+	check_file( data, filename );
+
+	string line;
+	while (getline( data, line ) ) {
+		strings const l( split_to_vector(line,",") );
+		runtime_assert( l.size() == 3 && is_int(l[0]) );
+		Size pos( line.find(",") );
+		counts.push_back( int_of(l[0]) );
+		tcrs.push_back( line.substr(pos+1) );
+	}
+	data.close();
+
+}
+
 #endif

@@ -73,6 +73,79 @@ compute_rank_score(
 
 
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// this is templated because there are different flavors of TCR depending on whether we know the V gene at the family
+// or allele level
+template< typename T >
+void
+calc_MH_score(
+	Reals const & f1_probs,
+	strings const & f1_tcrs,
+	vector< T > const & f1_dtcrs,
+	Reals const & f2_probs,
+	strings const & f2_tcrs,
+	vector< T > const & f2_dtcrs,
+	TCRdistCalculator const & tcrdist,
+	string const & outprefix
+)
+{
+	Reals const thresholds{ 3.5, 6.5, 12.5 }; // 19.26 is the tcrdist value for single-chain analyses
+	//Reals const thresholds{ 19.26, 38.52, 57.78 }; // 19.26 is the tcrdist value for single-chain analyses
+
+	Real const neginvar0( -1.0/(thresholds[0]*thresholds[0] ));
+	Real const neginvar1( -1.0/(thresholds[1]*thresholds[1] ));
+	Real const neginvar2( -1.0/(thresholds[2]*thresholds[2] ));
+	//Real const sdev(thresholds[0]); // temp hack
+
+	// make a big distance matrix including all the tcrs
+	//Size const num_f1_tcrs( f1_tcrs.size() ), num_f2_tcrs( f2_tcrs.size() ), num_tcrs( num_f1_tcrs + num_f2_tcrs );
+
+	Reals all_tot0s, all_tot1s, all_tot2s;
+
+	for ( Size r=1; r<= 3; ++r ) { // 1-1 2-2 1-2
+		vector< T > const & i_dtcrs( r==2 ? f2_dtcrs : f1_dtcrs );
+		vector< T > const & j_dtcrs( r==1 ? f1_dtcrs : f2_dtcrs );
+		Reals const & i_probs( r==2 ? f2_probs : f1_probs );
+		Reals const & j_probs( r==1 ? f1_probs : f2_probs );
+
+		Size const i_end( i_dtcrs.size() ), j_end( j_dtcrs.size() );
+
+		cerr << "compute MH: " << i_end << ' ' << j_end << endl;
+		Real dist, tot0(0), tot1(0), tot2(0);
+		for ( Size i=0; i< i_end; ++i ) {
+			//T const & it( i_dtcrs[i] );
+			for ( Size j=0; j< j_end; ++j ) {
+				dist = tcrdist( i_dtcrs[i], j_dtcrs[j] );
+				tot0 += i_probs[i] * j_probs[j] * exp( neginvar0*dist*dist );
+				tot1 += i_probs[i] * j_probs[j] * exp( neginvar1*dist*dist );
+				tot2 += i_probs[i] * j_probs[j] * exp( neginvar2*dist*dist );
+				// norm = tcrdist( i_dtcrs[i], j_dtcrs[j] ) / sdev;
+				// tot += i_probs[i] * j_probs[j] * exp( -1*norm*norm );
+			}
+		}
+		all_tot0s.push_back( tot0 );
+		all_tot1s.push_back( tot1 );
+		all_tot2s.push_back( tot2 );
+		cerr << "MH: " << i_end << ' ' << j_end << ' ' << tot0 << ' '<< tot1 << ' ' << tot2 << endl;
+	}
+
+	string const outfile(outprefix + "repdist_scores.tsv" );
+	cerr << "writing Repdist scores to file: " << outfile << endl;
+
+	ofstream out( outfile.c_str() );
+	out << "thresholds: " << thresholds[0] << ' ' << thresholds[1] << ' ' << thresholds[2] << endl;
+	out << "MH0: " << 2*all_tot0s[2]/(all_tot0s[0]+all_tot0s[1]) << ' ' << all_tot0s[0] << ' ' << all_tot0s[1] << ' ' << all_tot0s[2] << endl;
+	out << "MH1: " << 2*all_tot1s[2]/(all_tot1s[0]+all_tot1s[1]) << ' ' << all_tot1s[0] << ' ' << all_tot1s[1] << ' ' << all_tot1s[2] << endl;
+	out << "MH2: " << 2*all_tot2s[2]/(all_tot2s[0]+all_tot2s[1]) << ' ' << all_tot2s[0] << ' ' << all_tot2s[1] << ' ' << all_tot2s[2] << endl;
+	out.close();
+
+}
+
+
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // this is templated because there are different flavors of TCR depending on whether we know the V gene at the family
 // or allele level
@@ -263,6 +336,8 @@ int main(int argc, char** argv)
  		TCLAP::ValueArg<string> outprefix_arg("o","outprefix","String that will be prepended to any output files created.",
 			true,"unk","string",cmd);
 
+		TCLAP::SwitchArg with_counts_arg("w","with_counts","tcrs include count as first element", cmd, false);
+
 		cmd.parse( argc, argv );
 
 		string const outprefix( outprefix_arg.getValue() );
@@ -278,11 +353,18 @@ int main(int argc, char** argv)
 
 		string const tcrs_file1( tcrs_file1_arg.getValue() );
 		string const tcrs_file2( tcrs_file2_arg.getValue() );
+		bool const with_counts( with_counts_arg.getValue() );
 
 		strings f1_tcrs, f2_tcrs;
+		Sizes f1_counts, f2_counts;
 
-		read_tcrs_from_file( tcrs_file1, f1_tcrs );
-		if ( !tcrs_file2.empty() ) read_tcrs_from_file( tcrs_file2, f2_tcrs );
+		if ( with_counts ) {
+			read_tcrs_and_counts_from_file( tcrs_file1, f1_tcrs, f1_counts );
+			read_tcrs_and_counts_from_file( tcrs_file2, f2_tcrs, f2_counts );
+		} else {
+			read_tcrs_from_file( tcrs_file1, f1_tcrs );
+			if ( !tcrs_file2.empty() ) read_tcrs_from_file( tcrs_file2, f2_tcrs );
+		}
 
 		if ( f1_tcrs.empty() || f2_tcrs.empty() ) {
 			cout << "No TCRs read successfully from tcrs_file:  num1= " << f1_tcrs.size() << ' ' <<
@@ -312,12 +394,18 @@ int main(int argc, char** argv)
 			if ( !tcrdist.check_tcr_string_ok( f1_tcrs[i] ) ) {
 				cerr << "[WARNING] bad file1 tcr: " << i << ' ' << f1_tcrs[i] << endl;
 				f1_tcrs.erase( f1_tcrs.begin()+i );
+				if ( with_counts ) {
+					f1_counts.erase( f1_counts.begin()+i );
+				}
 			}
 		}
 		for ( int i=f2_tcrs.size()-1; i>=0; --i ) {
 			if ( !tcrdist.check_tcr_string_ok( f2_tcrs[i] ) ) {
 				cerr << "[WARNING] bad file2 tcr: " << i << ' ' << f2_tcrs[i] << endl;
 				f2_tcrs.erase( f2_tcrs.begin()+i );
+				if ( with_counts ) {
+					f2_counts.erase( f2_counts.begin()+i );
+				}
 			}
 		}
 
@@ -339,7 +427,23 @@ int main(int argc, char** argv)
 			for ( string tcr : f2_tcrs ) {
 				f2_dtcrs.push_back( tcrdist.create_distance_tcr_g( tcr ) );
 			}
-			calc_repdist_scores( f1_tcrs, f1_dtcrs, f2_tcrs, f2_dtcrs, tcrdist, outprefix );
+
+			if ( with_counts ) {
+				runtime_assert( f1_counts.size() == f1_tcrs.size() );
+				runtime_assert( f2_counts.size() == f2_tcrs.size() );
+				Reals f1_probs, f2_probs;
+				Size total(0);
+				for ( Size c: f1_counts ) total += c;
+				for ( Size c: f1_counts ) f1_probs.push_back( Real(c)/total );
+				total = 0;
+				for ( Size c: f2_counts ) total += c;
+				for ( Size c: f2_counts ) f2_probs.push_back( Real(c)/total );
+
+				calc_MH_score( f1_probs, f1_tcrs, f1_dtcrs, f2_probs, f2_tcrs, f2_dtcrs, tcrdist, outprefix );
+
+			} else {
+				calc_repdist_scores( f1_tcrs, f1_dtcrs, f2_tcrs, f2_dtcrs, tcrdist, outprefix );
+			}
 		}
 
 	} catch (TCLAP::ArgException &e)  // catch any exceptions

@@ -54,12 +54,15 @@ public:
 	DistanceTCR_f
 	create_distance_tcr_f( string const & v_family, string const & cdr3 ) const;
 
+	inline
 	Real
 	operator()( DistanceTCR_f const & t1, DistanceTCR_f const & t2 ) const;
 
+	inline
 	Real
 	operator()( DistanceTCR_g const & t1, DistanceTCR_g const & t2 ) const;
 
+	inline
 	Real
 	operator()( DistanceTCR_gs const & t1, DistanceTCR_gs const & t2 ) const;
 
@@ -296,6 +299,7 @@ TCRdistCalculator::cdr3_distance( string const & a, string const & b ) const
 	return weight_cdr3_region_ * dist + lendiff * gap_penalty_cdr3_region_; // gap penalty is not also weighted
 }
 
+inline
 Real
 TCRdistCalculator::operator()(
 	DistanceTCR_g const & t1,
@@ -305,6 +309,7 @@ TCRdistCalculator::operator()(
 	return V_dist_matrix_[ t1.v_num ][ t2.v_num ] + cdr3_distance( t1.cdr3, t2.cdr3 );
 }
 
+inline
 Real
 TCRdistCalculator::operator()(
 	DistanceTCR_gs const & t1,
@@ -320,6 +325,7 @@ TCRdistCalculator::operator()(
 	return min_vdist + cdr3_distance( t1.cdr3, t2.cdr3 );
 }
 
+inline
 Real
 TCRdistCalculator::operator()(
 	DistanceTCR_f const & t1,
